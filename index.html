@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d1016">
+  <title>Mora MiniLab 3 — Super Synth</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="192.png">
+  <link rel="stylesheet" href="style.css?v=4">
+</head>
+<body class="theme-white">
+
+  <!-- ── BARRA SUPERIOR DE SISTEMA, SONIDO, ESCALA Y MIDI ── -->
+  <header class="app-topbar">
+    <div class="topbar-left">
+      <div class="app-brand">
+        <span>🎹</span>
+        <span>MORA<span class="accent">MINILAB 3</span></span>
+      </div>
+
+      <button id="btn-midi-status" class="midi-pill" title="Estado Web MIDI USB-OTG / Click para MIDI Learn">
+        <span class="midi-dot"></span>
+        <span id="midi-status-text">MIDI: Detectando...</span>
+      </button>
+
+      <button id="btn-midi-learn" class="top-btn" title="Asignar controles físicos de tu Arturia MiniLab 3">
+        🎯 MIDI Learn
+      </button>
+    </div>
+
+    <div class="topbar-center">
+      <select id="preset-select" class="top-select" title="Seleccionar Instrumento Sampleado o Sintetizador">
+        <optgroup label="🎹 Pianos y Teclados Reales (Samples)">
+          <option value="sample_grand">🎹 Acoustic Grand Piano (Cola)</option>
+          <option value="sample_bright">🎹 Bright Studio Piano (Pop/House)</option>
+          <option value="sample_rock">🎸 Electric Grand CP-80 (Rock/MCR)</option>
+          <option value="sample_cabaret">🎪 Dark Cabaret Honky-Tonk</option>
+          <option value="sample_rhodes">✨ Fender Rhodes Mark I (E-Piano)</option>
+          <option value="sample_dx_ep">💎 Crystal Chorus DX E-Piano</option>
+          <option value="sample_harpsichord">🏛️ Clavecín Barroco (Harpsichord)</option>
+          <option value="sample_clavinet">🕺 Funk Clavinet D6</option>
+        </optgroup>
+        <optgroup label="⛪ Órganos y Acordeón Reales (Samples)">
+          <option value="sample_hammond">⛪ Hammond B3 Drawbar Organ</option>
+          <option value="sample_perc_organ">🔥 Jazz Percussive Organ</option>
+          <option value="sample_rock_organ">⚡ Rock Organ (Deep Purple)</option>
+          <option value="sample_church_organ">🕍 Órgano de Catedral (Pipe Organ)</option>
+          <option value="sample_reed_organ">🪵 Armonio Cálido (Reed Organ)</option>
+          <option value="sample_accordion">🪗 Acordeón / Bandoneón Real</option>
+        </optgroup>
+        <optgroup label="🎻 Violines, Cuerdas y Orquesta (Samples)">
+          <option value="sample_violin">🎻 Violín Solista Expresivo</option>
+          <option value="sample_viola">🎻 Viola de Cámara</option>
+          <option value="sample_cello">🎻 Violonchelo (Cello Solista)</option>
+          <option value="sample_contrabass">🎻 Contrabajo Acústico</option>
+          <option value="sample_strings1">🎼 Orquesta de Cuerdas (Symphonic)</option>
+          <option value="sample_strings2">🌙 Cuerdas Lentas (Slow Strings)</option>
+          <option value="sample_synth_strings">🌌 Synth Strings Solina</option>
+          <option value="sample_pizzicato">🤌 Cuerdas Pizzicato</option>
+          <option value="sample_harp">👼 Arpa Orquestal de Concierto</option>
+          <option value="sample_choir">👼 Coro Celestial (Choir Aahs)</option>
+        </optgroup>
+        <optgroup label="🎛️ Sintetizador Analógico / FM (Editable 100%)">
+          <option value="init_synth" selected>⚡ Init Super Synth (Onda Libre)</option>
+          <option value="warm_analog">🌅 Warm Analog Poly</option>
+          <option value="acid_303">🧪 Acid TB-303 Squelch</option>
+          <option value="supersaw_trance">🚀 SuperSaw 2000s (Sandstorm)</option>
+          <option value="sub_bass">🔊 MiniMoog Fat Sub Bass</option>
+          <option value="pwm_strings">🎻 Lush PWM Strings (Synth)</option>
+        </optgroup>
+        <optgroup label="⚡ Clásicos Sintéticos de MoraChord">
+          <option value="grandpiano">🎹 Piano Acústico Sintético</option>
+          <option value="blackparade">🥀 Black Parade Piano (Synth)</option>
+          <option value="dx7ep">✨ Yamaha DX7 E-Piano 1 (FM)</option>
+          <option value="bornslippy">🔥 Synthpotting (Born Slippy)</option>
+          <option value="synthbrass">🎺 80s Synth Brass (Jump)</option>
+          <option value="vangelis">🌌 Blade Runner (CS-80)</option>
+          <option value="gfunk">🐍 G-Funk Whistle (West Coast)</option>
+          <option value="m1organ">🏠 90s House Organ (Korg M1)</option>
+          <option value="dx7bass">🎸 DX7 Solid Lately Bass</option>
+          <option value="organ">⛪ Órgano Hammond B3 (Synth)</option>
+          <option value="guitar">⚡ Lead Guitar Overdrive</option>
+          <option value="8bit">👾 8-Bit Chiptune NES</option>
+          <option value="crystal">🍷 Cristal Mágico FM</option>
+          <option value="alien">🛸 Alienígena Ring/FM</option>
+        </optgroup>
+      </select>
+
+      <button id="btn-key-prev" class="top-btn" title="Bajar Tonalidad">−</button>
+      <span id="top-key-label" style="font-family:'Outfit',sans-serif; font-weight:900; color:#38bdf8; min-width:22px; text-align:center;">C</span>
+      <button id="btn-key-next" class="top-btn" title="Subir Tonalidad">+</button>
+
+      <select id="scale-select" class="top-select" title="Escala Musical y Guía de Teclado">
+        <option value="0">Mayor (Jónica)</option>
+        <option value="1">Menor Natural (Eólica)</option>
+        <option value="2">Menor Armónica</option>
+        <option value="3">Menor Melódica</option>
+        <option value="4">Dórica</option>
+        <option value="5">Frigia</option>
+        <option value="6">Lidia</option>
+        <option value="7">Mixolidia</option>
+        <option value="9">Frigia Dominante (Árabe)</option>
+        <option value="11">Húngara Menor</option>
+        <option value="12">Japonesa (Hirajoshi)</option>
+        <option value="13">Pentatónica Mayor</option>
+        <option value="14">Pentatónica Menor</option>
+        <option value="15">Blues</option>
+        <option value="16">Libre (Cromática 12)</option>
+      </select>
+    </div>
+
+    <div class="topbar-right">
+      <button id="btn-offline-samples" class="top-btn" title="Descargar todos los Pianos, Órganos y Violines para tocar 100% sin internet y con 0ms de carga">
+        📥 Offline
+      </button>
+
+      <button id="btn-install-pwa" class="top-btn hidden" title="Instalar App en Celular o PC">
+        📲 Instalar
+      </button>
+
+      <button id="btn-update-app" class="top-btn" title="Buscar actualizaciones desde GitHub y recargar sin perder sonidos">
+        🔄 Actualizar
+      </button>
+
+      <select id="theme-select" class="top-select" title="Acabado del Chasis">
+        <option value="white" selected>⚪ Arturia White</option>
+        <option value="black">⚫ Arturia Black</option>
+        <option value="cyber">⚡ Mora Cyber</option>
+        <option value="80s">🌆 Neon 80s</option>
+        <option value="mcr">🥀 MCR Parade</option>
+      </select>
+
+      <button id="btn-compact-toggle" class="top-btn" title="Alternar tamaño de teclas para celular">
+        📐 Compacto
+      </button>
+
+      <button id="btn-panic" class="top-btn danger" title="Detener todas las notas y ritmos (Panic)">
+        🛑 STOP
+      </button>
+    </div>
+  </header>
+
+  <!-- ── CHASIS PRINCIPAL ARTURIA MINILAB 3 ── -->
+  <main class="minilab-viewport">
+    <div class="minilab-chassis">
+      <div class="wood-cheek left"></div>
+
+      <div class="minilab-body">
+
+        <!-- =================================================================
+             SECCIÓN SUPERIOR: PANEL DE CONTROL DEL MINILAB 3
+             1) Botones Izq + Touch Strips | 2) OLED + Encoder | 3) 8 Perillas | 4) 4 Faders
+             ================================================================= -->
+        <section class="control-deck">
+
+          <!-- 1. COLUMNA IZQUIERDA: SHIFT, HOLD, OCT-, OCT+ & PITCH/MOD STRIPS -->
+          <div class="left-hw-col">
+            <div class="hw-buttons-grid">
+              <button class="hw-btn" id="hw-btn-shift" title="Shift: mantené o tocá para funciones secundarias y reasignar perillas">
+                <span class="led-bar"></span>SHIFT
+              </button>
+              <button class="hw-btn" id="hw-btn-hold" title="Hold / Sustain: mantiene las notas y acordes sonando">
+                <span class="led-bar"></span>HOLD
+              </button>
+              <button class="hw-btn" id="hw-btn-oct-down" title="Bajar Octava del teclado de 25 teclas (Z)">
+                <span class="led-bar" id="led-oct-down"></span>OCT −
+              </button>
+              <button class="hw-btn" id="hw-btn-oct-up" title="Subir Octava del teclado de 25 teclas (X)">
+                <span class="led-bar" id="led-oct-up"></span>OCT +
+              </button>
+            </div>
+
+            <div class="touch-strips-row">
+              <!-- PITCH BEND TOUCH STRIP -->
+              <div class="touch-strip-unit">
+                <div class="touch-strip-track" id="pitch-strip" title="Pitch Bend Strip (vuelve al centro al soltar)">
+                  <div class="strip-leds" id="pitch-leds"></div>
+                  <div class="strip-center-line"></div>
+                  <div class="strip-fill" id="pitch-fill" style="top:50%; height:0%;"></div>
+                  <div class="strip-thumb" id="pitch-thumb" style="top:50%;"></div>
+                </div>
+                <span class="strip-label">PITCH</span>
+              </div>
+
+              <!-- MODULATION TOUCH STRIP -->
+              <div class="touch-strip-unit">
+                <div class="touch-strip-track" id="mod-strip" title="Modulation Wheel Strip (CC 1 — Vibrato / LFO / Filtro)">
+                  <div class="strip-leds" id="mod-leds"></div>
+                  <div class="strip-fill" id="mod-fill" style="bottom:0; height:15%;"></div>
+                  <div class="strip-thumb" id="mod-thumb" style="top:85%;"></div>
+                </div>
+                <span class="strip-label">MOD</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. COLUMNA PANTALLA OLED + ENCODER PRINCIPAL -->
+          <div class="oled-encoder-col">
+            <div class="arturia-bezel">
+              <div class="bezel-brand">ARTURIA</div>
+              <div class="oled-screen" id="oled-screen">
+                <div class="oled-top-row">
+                  <span id="oled-oct-txt">OCT: C3-C5</span>
+                  <span id="oled-Wave-txt">SAW+SUB</span>
+                  <span id="oled-bpm-txt">120 BPM</span>
+                </div>
+                <canvas id="oled-scope" class="oled-canvas" width="220" height="44"></canvas>
+                <div class="oled-main-text" id="oled-main-text">⚡ Init Super Synth</div>
+                <div class="oled-sub-row">
+                  <span id="oled-param-name">LISTO PARA TOCAR</span>
+                  <span id="oled-param-val">C Maj</span>
+                </div>
+                <div class="oled-bar-wrap">
+                  <div class="oled-bar-fill" id="oled-bar-fill" style="width: 65%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="encoder-deck-row">
+              <div class="main-encoder-wrap">
+                <div class="main-encoder" id="main-encoder" title="Arrastrá para cambiar de Sonido/Preset | Doble click para abrir Matriz de Controles">
+                  <div class="main-encoder-indicator" id="main-encoder-ind"></div>
+                </div>
+                <span class="strip-label">PRESET / EDIT</span>
+              </div>
+
+              <div class="encoder-side-btns">
+                <button class="hw-btn" id="btn-deck-beat" title="Iniciar / Detener Ritmo de Batería">
+                  <span class="led-bar"></span>▶ BEAT
+                </button>
+                <button class="hw-btn" id="btn-deck-arp" title="Encender / Apagar Arpegiador">
+                  <span class="led-bar"></span>🌀 ARP
+                </button>
+                <button class="hw-btn" id="btn-deck-seq" title="Abrir Secuenciador de 16 Pasos (Batería + Bajo/Synth)">
+                  <span class="led-bar"></span>🎛️ SEQ 16
+                </button>
+                <button class="hw-btn active" id="btn-deck-guide" title="Mostrar notas de la escala y acordes en las 25 teclas">
+                  <span class="led-bar"></span>✨ GUÍA
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. SECCIÓN CENTRAL: LAS 8 PERILLAS (KNOBS 1–8) -->
+          <div class="knobs-section">
+            <div class="knobs-header-bar">
+              <span class="deck-section-title">8 PERILLAS ASIGNABLES (Tocá el nombre para elegir control)</span>
+              <div class="bank-pills">
+                <button class="bank-pill active" data-bank="synth" title="Onda, Cutoff, Res, Detune, Sub/FM, LFO, Echo, Reverb">B1: Sinte</button>
+                <button class="bank-pill" data-bank="waves" title="Onda 1, Onda 2, Mix 2, Sub, FM Ratio, FM Depth, Drive, Chorus">B2: Ondas & FM</button>
+                <button class="bank-pill" data-bank="fx" title="Cutoff, Res, Filter Env, LFO Rate, Echo Mix, Echo Time, Echo FB, Reverb">B3: Filtro & FX</button>
+              </div>
+            </div>
+
+            <div class="knobs-grid" id="knobs-grid">
+              <!-- Generado dinámicamente por app.js (8 perillas exactas) -->
+            </div>
+          </div>
+
+          <!-- 4. SECCIÓN DERECHA: LOS 4 FADERS VERTICALES (FADERS 1–4) -->
+          <div class="faders-section">
+            <div class="faders-header-bar">
+              <span class="minilab-model-tag">MINILAB <span>3</span></span>
+              <div class="bank-pills">
+                <button class="bank-pill active" data-fbank="adsr" title="Faders 1-4: Attack, Decay, Sustain, Release">ADSR</button>
+                <button class="bank-pill" data-fbank="mix" title="Faders 1-4: Osc1/2 Mix, Sub Nivel, Echo, Master Vol">MIX</button>
+              </div>
+            </div>
+
+            <div class="faders-grid" id="faders-grid">
+              <!-- Generado dinámicamente por app.js (4 faders exactos) -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- =================================================================
+             SECCIÓN MEDIA: 8 PADS RGB + MODOS (ACORDES / DRUMS / PRESETS)
+             ================================================================= -->
+        <section class="pads-deck">
+          <div class="pads-mode-controls">
+            <button class="pad-mode-btn active" data-padmode="chords" title="Pads 1-8 tocan los 8 Acordes de la Escala e iluminan las teclas">
+              🎼 Acordes
+            </button>
+            <button class="pad-mode-btn" data-padmode="drums" title="Pads 1-8 disparan Batería en vivo y controlan el Ritmo">
+              🥁 Drums
+            </button>
+            <button class="pad-mode-btn" data-padmode="presets" title="Pads 1-8 cargan o guardan tus 8 sonidos favoritos (Mantener para guardar)">
+              💾 User 1-8
+            </button>
+
+            <select id="chord-mod-select" class="deck-mini-select" title="Modificador de Acordes (como el Joystick de MoraChord)">
+              <option value="center">Acorde: Tríada</option>
+              <option value="7th">Acorde: Maj7 / m7</option>
+              <option value="dom7">Acorde: Dom 7</option>
+              <option value="9th">Acorde: 9th (Novena)</option>
+              <option value="sus4">Acorde: Sus4</option>
+              <option value="6th">Acorde: 6th (Sexta)</option>
+              <option value="flip">Acorde: Invertir M/m</option>
+              <option value="dim">Acorde: Dim7</option>
+              <option value="aug">Acorde: Aug (+)</option>
+            </select>
+
+            <select id="latch-arp-select" class="deck-mini-select" title="Modo Latch / Arpegiador para Acordes y Teclado">
+              <option value="off">Latch/Arp: OFF</option>
+              <option value="pad">Latch: PAD Continuo</option>
+              <option value="4x">Rítmico: Pulsos 1/4</option>
+              <option value="arp_up">⚡ Arp Subida (1/16)</option>
+              <option value="arp_down">⚡ Arp Bajada (1/16)</option>
+              <option value="arp_updown">⚡ Arp Subida/Bajada</option>
+              <option value="arp_random">👾 Arp Random S&H</option>
+              <option value="on_the_run">🌀 Pink Floyd (On The Run)</option>
+              <option value="seq_16">🧪 Secuencia 16 Pasos</option>
+            </select>
+
+            <select id="drum-pattern-select" class="deck-mini-select" title="Patrón de Batería (MoraChord)">
+              <option value="synth">Ritmo: Synthwave 80s</option>
+              <option value="french">Ritmo: French Touch</option>
+              <option value="disco">Ritmo: House / Disco 909</option>
+              <option value="techno">Ritmo: Techno Berlin</option>
+              <option value="rock">Ritmo: Rock Básico</option>
+              <option value="rockalt">Ritmo: Rock Alternativo</option>
+              <option value="hiphop">Ritmo: Hip-Hop Boom Bap</option>
+              <option value="trap">Ritmo: Trap 808</option>
+              <option value="dnb">Ritmo: Drum & Bass</option>
+              <option value="reggaeton">Ritmo: Reggaeton</option>
+              <option value="cumbia">Ritmo: Cumbia</option>
+              <option value="bossa">Ritmo: Bossa Nova</option>
+              <option value="reggae">Ritmo: Reggae One Drop</option>
+            </select>
+          </div>
+
+          <div class="rgb-pads-row" id="rgb-pads-row">
+            <!-- 8 Pads RGB generados por app.js -->
+          </div>
+        </section>
+
+        <!-- =================================================================
+             SECCIÓN INFERIOR: 25 TECLAS SLIM (2 OCTAVAS EXACTAS DE DO A DO)
+             ================================================================= -->
+        <section class="keybed-housing">
+          <div class="keybed-felt-strip"></div>
+          <div class="keybed-25" id="keybed-25">
+            <!-- 15 teclas blancas + 10 teclas negras = 25 teclas generadas por app.js -->
+          </div>
+        </section>
+
+      </div>
+
+      <div class="wood-cheek right"></div>
+    </div>
+  </main>
+
+  <!-- ── MODAL 1: SELECTOR DE PARÁMETRO PARA PERILLAS Y FADERS ── -->
+  <div class="modal-backdrop hidden" id="param-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-title" id="param-modal-title">🎛️ Elegir Parámetro para Perilla 1</span>
+        <button class="modal-close" id="btn-close-param-modal">✕ Cerrar</button>
+      </div>
+      <div class="modal-body" id="param-modal-body">
+        <!-- Categorías de los 28 parámetros generadas por app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL 2: SECUENCIADOR DE 16 PASOS (BATERÍA + SYNTH MATRIX) ── -->
+  <div class="modal-backdrop hidden" id="seq-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-title">🥁 Secuenciador de 16 Pasos (Batería + Línea Synth)</span>
+        <div style="display:flex; gap:6px;">
+          <button class="top-btn" id="btn-seq-random">🎲 Aleatorio</button>
+          <button class="top-btn" id="btn-seq-clear">↺ Limpiar</button>
+          <button class="modal-close" id="btn-close-seq-modal">✕ Cerrar</button>
+        </div>
+      </div>
+      <div class="modal-body" id="seq-modal-body">
+        <!-- Grilla de 16 pasos generada por app.js -->
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=4"></script>
+</body>
+</html>
